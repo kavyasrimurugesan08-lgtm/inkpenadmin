@@ -1,7 +1,7 @@
 let S;try{
  let raw=localStorage.getItem(K);
  if(raw){
-  raw=raw.replace(/Sample:\s*/gi,'').replace(/Replace with a real project\./gi,'High-conversion storefront architecture and UI engineering.').replace(/Sample client two/gi,'Marcus Vance').replace(/Sample client/gi,'Elena Rostova').replace(/Sample member/gi,'Jawahar Kumar');
+  raw=raw.replace(/Sample:\s*/gi,'').replace(/Replace with a real project\./gi,'High-conversion storefront architecture and UI engineering.').replace(/Sample client two/gi,'Marcus Vance').replace(/Sample client/gi,'Elena Rostova').replace(/Sample member/gi,'');
   localStorage.setItem(K,raw);
   S=JSON.parse(raw);
  }

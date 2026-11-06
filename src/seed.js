@@ -37,7 +37,7 @@ const SEED={sample:true,range:'week',
  reviews:[{id:'r1',author:'Elena Rostova',company:'Nova Systems',quote:'Clear communication and fast delivery.',status:'Approved'},{id:'r2',author:'Marcus Vance',company:'Apex Labs',quote:'Helpful team from start to finish.',status:'Hidden'}],
  logos:[],
  jobs:[{id:'j1',title:'Frontend Developer',division:'Tech',type:'Full-time',location:'Remote',description:'Build polished web interfaces for client projects.',status:'Open'},{id:'j2',title:'Video Editor',division:'Media',type:'Contract',location:'Chennai',description:'Edit short-form and long-form video content for campaigns.',status:'Open'},{id:'j3',title:'Academy Instructor',division:'Academy',type:'Part-time',location:'Remote',description:'Deliver online sessions on design or technology topics.',status:'Closed'}],
- team:[{id:'t1',name:'Jawahar Kumar',role:'Creative Director',url:''}]
+ team:[]
 };
 const VIEWS=[['dash','Dashboard'],['content','Website content'],['projects','Projects'],['services','Services'],['cats','Categories'],['leads','Inquiries'],['reviews','Testimonials'],['logos','Client logos'],['team','Team profiles'],['jobs','Job openings'],['settings','Settings']];
 const C={
