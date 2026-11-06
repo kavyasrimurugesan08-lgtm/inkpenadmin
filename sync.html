@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>INKPEN Sync Bridge</title></head>
+<body>
+<script src="/src/seed.js"></script>
+<script>
+(function(){
+  var KEY = typeof K !== 'undefined' ? K : 'inkpen-admin-v3';
+  var bc = null;
+  try { bc = new BroadcastChannel('inkpen_admin_channel'); } catch (e) {}
+
+  function getState() {
+    var s = null;
+    try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) { s = null; }
+    if (!s && typeof SEED !== 'undefined') {
+      s = JSON.parse(JSON.stringify(SEED));
+      try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+    }
+    return s || {};
+  }
+
+  function sendStateToParent() {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'INKPEN_STATE', state: getState() }, '*');
+      }
+    } catch (e) {}
+  }
+
+  // Send initial state immediately
+  sendStateToParent();
+
+  // Listen for localStorage changes from other tabs on this origin (Admin Panel)
+  window.addEventListener('storage', function(e) {
+    if (!e.key || e.key === KEY) {
+      sendStateToParent();
+    }
+  });
+
+  // Listen for BroadcastChannel messages from Admin Panel on this origin
+  if (bc) {
+    bc.onmessage = function(ev) {
+      if (ev.data && ev.data.type === 'INKPEN_SAVED') {
+        sendStateToParent();
+      }
+    };
+  }
+
+  // Listen for updates coming from the Public Website (e.g. new lead/inquiry or inline CMS edit)
+  window.addEventListener('message', function(ev) {
+    var d = ev.data;
+    if (!d || typeof d !== 'object') return;
+
+    if (d.type === 'INKPEN_GET_STATE') {
+      sendStateToParent();
+      return;
+    }
+
+    if (d.type === 'INKPEN_ADD_LEAD' && d.lead) {
+      var s = getState();
+      s.leads = Array.isArray(s.leads) ? s.leads : [];
+      s.leads.unshift(d.lead);
+      try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+      if (bc) try { bc.postMessage({ type: 'INKPEN_EXTERNAL_UPDATE', state: s }); } catch (e) {}
+      sendStateToParent();
+      return;
+    }
+
+    if (d.type === 'INKPEN_UPDATE_JOBS' && Array.isArray(d.jobs)) {
+      var s2 = getState();
+      s2.jobs = d.jobs;
+      try { localStorage.setItem(KEY, JSON.stringify(s2)); } catch (e) {}
+      if (bc) try { bc.postMessage({ type: 'INKPEN_EXTERNAL_UPDATE', state: s2 }); } catch (e) {}
+      sendStateToParent();
+      return;
+    }
+
+    if (d.type === 'INKPEN_UPDATE_SITE_CONTENT' && d.siteContent) {
+      var s3 = getState();
+      s3.siteContent = d.siteContent;
+      try { localStorage.setItem(KEY, JSON.stringify(s3)); } catch (e) {}
+      if (bc) try { bc.postMessage({ type: 'INKPEN_EXTERNAL_UPDATE', state: s3 }); } catch (e) {}
+      sendStateToParent();
+      return;
+    }
+  });
+})();
+</script>
+</body>
+</html>
+
