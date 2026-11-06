@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>INKPEN Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/src/admin.css">
+</head>
+<body>
+<div id="login" hidden>
+ <div class="card">
+  <div class="chip"><img id="loginlogo" alt="INKPEN"></div>
+  <h1>Admin sign in</h1>
+  <p class="mute" style="margin:0">Enter your admin username and password.</p>
+  <form id="lgf" autocomplete="off" novalidate>
+   <label for="lgu">Username<input id="lgu" autocomplete="username" required></label>
+   <label for="lgp">Password<div class="pwrow"><input id="lgp" type="password" autocomplete="current-password" required><button type="button" id="lgeye" aria-label="Show password">👁</button></div></label>
+   <p id="lgerr" role="alert"></p>
+   <button class="btn p" type="submit">Sign in</button>
+  </form>
+ </div>
+</div>
+<div id="app" hidden>
+ <button id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="side">☰</button>
+ <div id="scrim"></div>
+ <aside class="side" id="side">
+  <div class="chip"><img id="sidelogo" alt="INKPEN"></div>
+  <nav class="nav" id="nav" aria-label="Admin sections"></nav>
+  <div class="side-foot">
+   <button class="btn sm" id="theme" type="button">☀ Light theme</button>
+   <button class="btn sm" id="signout" type="button">⏻ Sign out</button>
+  </div>
+ </aside>
+ <main id="main"></main>
+</div>
+<div id="toast" role="status"></div>
+<script src="/src/logo.js"></script>
+<script src="/src/seed.js"></script>
+<script src="/src/app.js"></script>
+<script src="/src/auth.js"></script>
+</body>
+</html>
