@@ -37,10 +37,29 @@
   // Send initial state immediately
   sendStateToParent();
 
+  // Also query database directly to ensure freshest state is propagated
+  function fetchDatabaseState() {
+    var endpoints = ['/api/state', 'http://localhost:4000/api/state'];
+    function tryNext(i) {
+      if (i >= endpoints.length) return Promise.reject();
+      return fetch(endpoints[i], { headers: { 'Accept': 'application/json' }, cache: 'no-store' })
+        .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+        .catch(function() { return tryNext(i + 1); });
+    }
+    tryNext(0).then(function(remote) {
+      if (remote && remote.site) {
+        try { localStorage.setItem(KEY, JSON.stringify(remote)); } catch (e) {}
+        sendStateToParent();
+      }
+    }).catch(function() {});
+  }
+  fetchDatabaseState();
+
   // Listen for localStorage changes from other tabs on this origin (Admin Panel)
   window.addEventListener('storage', function(e) {
-    if (!e.key || e.key === KEY) {
+    if (!e.key || e.key === KEY || e.key === 'inkpen_admin_sync_tick') {
       sendStateToParent();
+      fetchDatabaseState();
     }
   });
 

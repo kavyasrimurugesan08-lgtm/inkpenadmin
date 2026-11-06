@@ -10,14 +10,23 @@ if(!S)S=JSON.parse(JSON.stringify(SEED));
 if(!S.content)S.content=JSON.parse(JSON.stringify(SEED.content));
 window.S=S;
 let V='dash',leadFilter='All';
-const API_BASE=window.INKPEN_API_BASE||'http://localhost:4000/api';
+const API_BASE=window.INKPEN_API_BASE||(typeof window!=='undefined'&&window.__INKPEN_ENV__&&window.__INKPEN_ENV__.API_BASE)||'http://localhost:4000/api';
 let bc=null;try{bc=new BroadcastChannel('inkpen_admin_channel')}catch(e){}
 
 const save=()=>{
- try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast('Could not save in this browser. Storage is full.')}
- if(bc)try{bc.postMessage({type:'INKPEN_SAVED',state:S})}catch(e){}
- fetch('/api/state',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(S)}).catch(()=>{});
- fetch(API_BASE+'/state',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(S)}).catch(()=>{});
+ S._updated=Date.now();
+ try{
+  localStorage.setItem(K,JSON.stringify(S));
+  localStorage.setItem('inkpen_admin_sync_tick',String(Date.now()));
+ }catch(e){toast('Could not save in this browser. Storage is full.')}
+ if(bc)try{bc.postMessage({type:'INKPEN_SAVED',state:S,timestamp:S._updated})}catch(e){}
+ const body=JSON.stringify(S);
+ const opts={method:'PUT',headers:{'Content-Type':'application/json','Accept':'application/json'},body};
+ fetch('/api/state',opts).catch(()=>{});
+ if(API_BASE&&API_BASE!=='/api')fetch(API_BASE+'/state',opts).catch(()=>{});
+ fetch('http://localhost:4000/api/state',opts).catch(()=>{});
+ fetch('http://localhost:3000/api/state',opts).catch(()=>{});
+ fetch('/api/site',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:S.site,siteContent:S.siteContent})}).catch(()=>{});
 };
 const $=s=>document.querySelector(s);
 window.$=$;
@@ -161,7 +170,9 @@ function saveContent(){
 function saveSettings(){
  document.querySelectorAll('[data-s]').forEach(i=>S.site[i.dataset.s]=i.value.trim());
  document.querySelectorAll('[data-so]').forEach(i=>S.site.social[i.dataset.so]=i.value.trim());
- S.site.twofa=$('#tf').checked;save();
+ S.site.twofa=$('#tf').checked;
+ save();
+ render();
  toast($('#np').value?'Settings saved (password unchanged)':'Settings saved — live on public website');
 }
 function setMenu(open){
@@ -203,6 +214,8 @@ window.render=render;window.setMenu=setMenu;
 window.addEventListener('storage',e=>{
  if(e.key===K&&e.newValue){
   try{S=JSON.parse(e.newValue);if(!$('#app').hidden)render()}catch(x){}
+ }else if(e.key==='inkpen_admin_sync_tick'){
+  syncRemoteState();
  }
 });
 if(bc){
@@ -213,11 +226,24 @@ if(bc){
  };
 }
 
-// Initial sync with shared API if available
-fetch('/api/state').then(r=>r.ok?r.json():Promise.reject()).catch(()=>fetch(API_BASE+'/state').then(r=>r.ok?r.json():null)).then(remote=>{
- if(remote&&remote.site&&Array.isArray(remote.jobs)){
-  S=Object.assign({},SEED,remote,{content:Object.assign({},SEED.content,remote.content||S.content||{})});
-  try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}
-  if(!$('#app').hidden)render();
+// Initial and periodic sync with shared database API
+function syncRemoteState(){
+ const endpoints=['/api/state',API_BASE+'/state','http://localhost:4000/api/state'];
+ function fetchFirst(i){
+  if(i>=endpoints.length)return Promise.reject();
+  return fetch(endpoints[i],{headers:{'Accept':'application/json'},cache:'no-store'})
+   .then(r=>r.ok?r.json():Promise.reject())
+   .catch(()=>fetchFirst(i+1));
  }
-}).catch(()=>{});
+ fetchFirst(0).then(remote=>{
+  if(remote&&remote.site&&Array.isArray(remote.jobs)){
+   S=Object.assign({},SEED,remote,{
+    content:Object.assign({},SEED.content,remote.content||(S&&S.content)||{}),
+    site:Object.assign({},SEED.site,remote.site||{},{social:Object.assign({},SEED.site.social,(remote.site&&remote.site.social)||{})})
+   });
+   try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}
+   if(!$('#app').hidden)render();
+  }
+ }).catch(()=>{});
+}
+syncRemoteState();

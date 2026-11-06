@@ -74,21 +74,21 @@ th{font-size:13px;color:var(--mute);font-weight:500}
 #login .pwrow button{position:absolute;right:.4rem;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--mute);padding:.3rem}
 #lgerr{color:var(--bad);font-size:13px;min-height:1.1em}
 
-/* ---- Admin sign in: mobile layout (card centred, contents left-aligned) ---- */
+/* ---- Admin sign in: mobile layout (card centred, logo & header text centred, form fields full width) ---- */
 @media(max-width:600px){
  #login{display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;min-height:100vh;min-height:100dvh;overflow-x:hidden;padding:max(1.25rem,env(safe-area-inset-top)) max(1rem,env(safe-area-inset-right)) max(1.25rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left))}
- #login .card{display:flex;flex-direction:column;align-items:stretch;width:100%;max-width:400px;min-width:0;margin:auto;padding:clamp(1.1rem,5.5vw,1.5rem);text-align:left}
- #login .card>.chip{align-self:flex-start;margin:0 0 1rem}
- #login .chip img{height:clamp(52px,16vw,64px);width:auto;max-width:100%;object-fit:contain}
- #login h1,#login .card>p{text-align:left;align-self:stretch}
- #login h1{margin:0 0 .35rem}
+ #login .card{display:flex;flex-direction:column;align-items:stretch;width:100%;max-width:400px;min-width:0;margin:auto;padding:clamp(1.2rem,5.5vw,1.6rem);text-align:center}
+ #login .card>.chip{align-self:center;display:flex;justify-content:center;margin:0 auto 1.1rem}
+ #login .chip img{height:clamp(54px,16vw,66px);width:auto;max-width:100%;object-fit:contain;margin:0 auto;display:block}
+ #login h1,#login .card>p{text-align:center;align-self:stretch}
+ #login h1{margin:0 0 .4rem}
  #login form{display:flex;flex-direction:column;align-items:stretch;gap:1rem;width:100%;margin-top:1.25rem}
  #login label{display:flex;flex-direction:column;align-items:stretch;gap:.4rem;width:100%;text-align:left}
  #login input{display:block;width:100%;min-width:0;max-width:100%;min-height:46px;font-size:16px}
  #login .pwrow{display:block;width:100%}
  #login .pwrow input{padding-right:3rem}
  #login .pwrow button{right:.35rem;width:38px;height:38px;padding:0;display:grid;place-items:center;line-height:1;border-radius:8px}
- #login #lgerr{margin:-.35rem 0 0}
+ #login #lgerr{text-align:center;margin:-.35rem 0 0}
  #login .btn.p{display:block;width:100%;min-height:48px;margin-top:.1rem}
 }
 @media(max-width:340px){
