@@ -1,6 +1,14 @@
-let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){S=null}
+let S;try{
+ let raw=localStorage.getItem(K);
+ if(raw){
+  raw=raw.replace(/Sample:\s*/gi,'').replace(/Replace with a real project\./gi,'High-conversion storefront architecture and UI engineering.').replace(/Sample client two/gi,'Marcus Vance').replace(/Sample client/gi,'Elena Rostova').replace(/Sample member/gi,'Jawahar Kumar');
+  localStorage.setItem(K,raw);
+  S=JSON.parse(raw);
+ }
+}catch(e){S=null}
 if(!S)S=JSON.parse(JSON.stringify(SEED));
 if(!S.content)S.content=JSON.parse(JSON.stringify(SEED.content));
+window.S=S;
 let V='dash',leadFilter='All';
 const API_BASE=window.INKPEN_API_BASE||'http://localhost:4000/api';
 let bc=null;try{bc=new BroadcastChannel('inkpen_admin_channel')}catch(e){}
@@ -12,6 +20,7 @@ const save=()=>{
  fetch(API_BASE+'/state',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(S)}).catch(()=>{});
 };
 const $=s=>document.querySelector(s);
+window.$=$;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const cap=s=>s[0].toUpperCase()+s.slice(1);
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -188,6 +197,7 @@ document.addEventListener('change',e=>{
  else if(t.id==='logoin'){const f=t.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{if(r.result.length>300000){toast('Logo is too large. Use a file under 200 KB.');return}S.site.logo=r.result;save();render();toast('Logo updated')};r.readAsDataURL(f)}
 });
 $('#theme').onclick=()=>{const d=document.documentElement;d.dataset.theme=d.dataset.theme==='light'?'dark':'light';render()};
+window.render=render;window.setMenu=setMenu;
 
 // Listen for external updates from Public Website (e.g. new inquiry or inline CMS change)
 window.addEventListener('storage',e=>{

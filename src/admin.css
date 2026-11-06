@@ -6,8 +6,8 @@
 select option{background:var(--panel);color:var(--fg)}
 select option:checked{background:var(--g);color:#04140b}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.55 Inter,system-ui,sans-serif}
-h1,h2{font-family:'Space Grotesk',system-ui,sans-serif;margin:0;letter-spacing:-.02em;line-height:1.15}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.6 'Plus Jakarta Sans',Inter,system-ui,sans-serif;letter-spacing:-.005em}
+h1,h2{font-family:'Outfit','Space Grotesk',system-ui,sans-serif;font-weight:700;margin:0;letter-spacing:-.02em;line-height:1.15}
 h1{font-size:2rem}h2{font-size:1.3rem}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
