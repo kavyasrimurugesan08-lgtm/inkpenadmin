@@ -21,5 +21,3 @@ $('#lgeye').onclick=()=>{const s=$('#lgp').type==='password';$('#lgp').type=s?'t
 $('#signout').onclick=()=>{try{sessionStorage.removeItem(AK)}catch(e){}setMenu(false);showLogin()};
 let authed=false;try{authed=sessionStorage.getItem(AK)==='1'}catch(e){}
 if(authed)showApp();else showLogin();
-
-
